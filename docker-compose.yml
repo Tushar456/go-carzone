@@ -1,0 +1,42 @@
+services:
+  carzone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgresdb
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_NAME: postgres
+      JWT_SECRET: secret
+      JWT_EXPIRY_TIME: 60
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    build:
+      context: db
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "4318:4318"
+      - "14268:14268"
+      - "16686:16686"
+
+volumes:
+  postgres_data:
+   
